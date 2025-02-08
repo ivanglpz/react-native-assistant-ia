@@ -83,13 +83,12 @@ export default function App() {
     handlePermission();
   }, []);
 
-  const handleStart = async () => {
-    const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-    if (!result.granted) {
-      console.warn("Permissions not granted", result);
+  useEffect(() => {
+    if (!isPermissionMicrophone) return;
+    if (isMute) {
+      ExpoSpeechRecognitionModule.stop();
       return;
     }
-    // Start speech recognition
     ExpoSpeechRecognitionModule.start({
       lang: "en-US",
       interimResults: true,
@@ -98,23 +97,10 @@ export default function App() {
       requiresOnDeviceRecognition: false,
       addsPunctuation: false,
       contextualStrings: ["Carlsen", "Nepomniachtchi", "Praggnanandhaa"],
-      // androidIntentOptions: {
-      //   EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 10000,
-      //   EXTRA_MASK_OFFENSIVE_WORDS: false,
-      // },
     });
-  };
-  // const handle2 = async () => {
-  //   const response = await askChatGPT(
-  //     "Hello, how are you? I'm creating a new app using ChatGPT API."
-  //   );
+  }, [isPermissionMicrophone, isMute]);
 
-  //   if (response) {
-  //     console.log("ChatGPT response:", response);
-  //   } else {
-  //     console.log("No response from ChatGPT.");
-  //   }
-  // };
+  console.log(transcript, "transcript");
 
   return (
     <SafeAreaView
