@@ -2,8 +2,9 @@ import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
+import { useSetAtom } from "jotai";
 import OpenAI from "openai";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Linking,
@@ -16,42 +17,58 @@ import {
 } from "react-native";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 import { Assistant } from "./components/Assistant";
+import { Chat } from "./components/Chat";
 import { Valid } from "./components/Valid";
+import { SET_NEW_CHAT_ATOM } from "./state/chat";
 const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
 const client = new OpenAI({
   apiKey: API_KEY, // This is the default and can be omitted
 });
-const askChatGPT = async (message: string) => {
-  try {
-    const chatCompletion = await client.chat.completions.create({
-      messages: [{ role: "user", content: message }], // Aquí el cambio
-      model: "gpt-4o-mini",
-    });
-
-    console.log(chatCompletion.choices[0]?.message?.content || "No response");
-    return chatCompletion.choices[0]?.message?.content;
-  } catch (error) {
-    console.error("Error in ChatGPT API:", error);
-  }
-};
 
 export default function App() {
-  const [recognizing, setRecognizing] = useState(false);
+  const setNewChat = useSetAtom(SET_NEW_CHAT_ATOM);
   const [transcript, setTranscript] = useState("");
   const [isMute, setisMute] = useState(true);
   const [isPermissionMicrophone, setIsPermissionMicrophone] = useState(false);
-
+  const containerRef = useRef<ScrollView>(null);
   const [ViewChat, setViewChat] = useState(false);
 
-  useSpeechRecognitionEvent("start", () => setRecognizing(true));
-  useSpeechRecognitionEvent("end", () => setRecognizing(false));
   useSpeechRecognitionEvent("result", (event) => {
-    setTranscript(event.results[0]?.transcript);
+    setTranscript(event.results[0]?.transcript?.trim());
   });
-  useSpeechRecognitionEvent("error", (event) => {
-    console.log("error code:", event.error, "error message:", event.message);
-  });
+
+  const askChatGPT = async (message: string) => {
+    try {
+      const chatCompletion = await client.chat.completions.create({
+        messages: [{ role: "user", content: message }], // Aquí el cambio
+        model: "gpt-4o-mini",
+      });
+
+      setNewChat({
+        type: "assistant",
+        content: chatCompletion.choices[0]?.message?.content?.trim?.() ?? "",
+      });
+      containerRef.current?.scrollToEnd();
+    } catch (error) {
+      console.error("Error in ChatGPT API:", error);
+      setNewChat({
+        type: "assistant",
+        content: `Error in ChatGPT API:, ${error}`,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (transcript?.length === 0) return;
+    const handler = setTimeout(() => {
+      setNewChat({ type: "user", content: transcript });
+      containerRef.current?.scrollToEnd();
+      // askChatGPT(transcript);
+      setTranscript("");
+    }, 3000);
+    return () => clearTimeout(handler); // Limpia el timeout si el usuario sigue escribiendo
+  }, [transcript]);
 
   const handlePermission = async () => {
     const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
@@ -100,8 +117,6 @@ export default function App() {
     });
   }, [isPermissionMicrophone, isMute]);
 
-  console.log(transcript, "transcript");
-
   return (
     <SafeAreaView
       style={{
@@ -111,9 +126,32 @@ export default function App() {
         backgroundColor: "white",
       }}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <Valid isValid={ViewChat}>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            padding: 15,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 18,
+            }}
+          >
+            Chat
+          </Text>
+        </View>
+      </Valid>
+      <ScrollView ref={containerRef} contentContainerStyle={{ flexGrow: 1 }}>
         <Valid isValid={!ViewChat}>
           <Assistant name="Whil" />
+        </Valid>
+        <Valid isValid={ViewChat}>
+          <Chat />
         </Valid>
       </ScrollView>
       <View
