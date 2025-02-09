@@ -41,12 +41,17 @@ export default function App() {
 
   const askChatGPT = async (message: string) => {
     try {
+      const isSpeak = await Speech.isSpeakingAsync();
+      if (isSpeak) {
+        Speech.stop();
+      }
       const chatCompletion = await client.chat.completions.create({
         messages: [{ role: "user", content: message }], // Aquí el cambio
         model: "gpt-4o-mini",
       });
 
       const text = chatCompletion.choices[0]?.message?.content?.trim?.() ?? "";
+
       Speech.speak(text);
 
       setNewChat({
@@ -68,11 +73,13 @@ export default function App() {
   useEffect(() => {
     if (transcript?.length === 0) return;
     const handler = setTimeout(() => {
+      console.log("ejecutandose");
+
       setNewChat({ type: "user", content: transcript });
       containerRef.current?.scrollToEnd();
-      // askChatGPT(transcript);
+      askChatGPT(transcript);
       setTranscript("");
-    }, 3000);
+    }, 1500);
     return () => clearTimeout(handler); // Limpia el timeout si el usuario sigue escribiendo
   }, [transcript]);
 
