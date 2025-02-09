@@ -1,3 +1,4 @@
+import * as Speech from "expo-speech";
 import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
@@ -45,16 +46,21 @@ export default function App() {
         model: "gpt-4o-mini",
       });
 
+      const text = chatCompletion.choices[0]?.message?.content?.trim?.() ?? "";
+      Speech.speak(text);
+
       setNewChat({
         type: "assistant",
-        content: chatCompletion.choices[0]?.message?.content?.trim?.() ?? "",
+        content: text,
       });
       containerRef.current?.scrollToEnd();
     } catch (error) {
-      console.error("Error in ChatGPT API:", error);
+      const text = `Error in ChatGPT API:, ${error}`;
+      Speech.speak(text);
+
       setNewChat({
         type: "assistant",
-        content: `Error in ChatGPT API:, ${error}`,
+        content: text,
       });
     }
   };
@@ -113,7 +119,6 @@ export default function App() {
       continuous: true,
       requiresOnDeviceRecognition: false,
       addsPunctuation: false,
-      contextualStrings: ["Carlsen", "Nepomniachtchi", "Praggnanandhaa"],
     });
   }, [isPermissionMicrophone, isMute]);
 
@@ -255,14 +260,14 @@ export default function App() {
               </Svg>
             </Valid>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.touchable}>
+          {/* <TouchableOpacity style={styles.touchable}>
             <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <Path
                 d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
                 fill="black"
               />
             </Svg>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </SafeAreaView>
