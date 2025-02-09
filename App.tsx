@@ -46,7 +46,13 @@ export default function App() {
         Speech.stop();
       }
       const chatCompletion = await client.chat.completions.create({
-        messages: [{ role: "user", content: message }], // Aquí el cambio
+        messages: [
+          {
+            role: "user",
+            content: `Please provide short and direct responses. Avoid long explanations, extra details, and focus only on the most essential information required to answer the question. ${message}`,
+          },
+        ], // Aquí el cambio
+
         model: "gpt-4o-mini",
       });
 
@@ -73,13 +79,11 @@ export default function App() {
   useEffect(() => {
     if (transcript?.length === 0) return;
     const handler = setTimeout(() => {
-      console.log("ejecutandose");
-
       setNewChat({ type: "user", content: transcript });
       containerRef.current?.scrollToEnd();
       askChatGPT(transcript);
       setTranscript("");
-    }, 1500);
+    }, 3000);
     return () => clearTimeout(handler); // Limpia el timeout si el usuario sigue escribiendo
   }, [transcript]);
 
