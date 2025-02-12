@@ -12,7 +12,7 @@ export const Badge = ({ name, color }: { name: string; color: string }) => {
       }}
     >
       <LinearGradient
-        colors={[color, "transparent"]}
+        colors={[color, color]}
         style={{
           height: 25,
           width: 25,
@@ -22,6 +22,7 @@ export const Badge = ({ name, color }: { name: string; color: string }) => {
       <Text
         style={{
           fontSize: 16,
+          color: "white",
         }}
       >
         {name}

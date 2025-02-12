@@ -17,12 +17,13 @@ export const Assistant = ({ name }: { name: string }) => {
         style={{
           fontWeight: "bold",
           fontSize: 32,
+          color: "white",
         }}
       >
         {name}
       </Text>
       <LinearGradient
-        colors={["#3DC5F8", "transparent"]}
+        colors={["#3DC5F8", "#3DC5F8"]}
         style={{
           height: 160,
           width: 160,

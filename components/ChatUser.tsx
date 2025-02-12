@@ -15,6 +15,7 @@ export const ChatUser = ({ content, id, type }: CHAT_MESSAGES_PROPS) => {
       <Text
         style={{
           fontSize: 18,
+          color: "white",
         }}
       >
         {content}
