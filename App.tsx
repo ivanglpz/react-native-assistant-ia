@@ -43,6 +43,7 @@ export default function App() {
   const SpeechTextStop = () => {
     ExpoSpeechRecognitionModule.stop();
   };
+
   const SpeechTextStart = () => {
     ExpoSpeechRecognitionModule.start({
       lang: "en-US",
@@ -52,7 +53,7 @@ export default function App() {
       requiresOnDeviceRecognition: true,
       addsPunctuation: false,
       androidIntent: "android.speech.action.RECOGNIZE_SPEECH",
-      contextualStrings: ["Javscript", "html", "react", "node", "next.js"],
+      // contextualStrings: ["Javscript", "html", "react", "node", "next.js"],
     });
   };
 
@@ -71,12 +72,9 @@ export default function App() {
 
       const text = chatCompletion.choices[0]?.message?.content?.trim?.() ?? "";
 
-      SpeechTextStop();
       Speech.speak(text, {
-        onDone: () => {
-          if (isMute) return;
-          SpeechTextStart();
-        },
+        onStart: SpeechTextStop,
+        onDone: SpeechTextStart,
       });
 
       setNewChat({
@@ -86,7 +84,10 @@ export default function App() {
       containerRef.current?.scrollToEnd();
     } catch (error) {
       const text = `Error in ChatGPT API:, ${error}`;
-      Speech.speak(text);
+      Speech.speak(text, {
+        onStart: SpeechTextStop,
+        onDone: SpeechTextStart,
+      });
 
       setNewChat({
         type: "assistant",
@@ -133,7 +134,6 @@ export default function App() {
   useEffect(() => {
     handlePermission();
   }, []);
-  console.log(isMute, "isMute");
 
   return (
     <SafeAreaView
