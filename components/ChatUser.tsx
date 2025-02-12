@@ -8,7 +8,7 @@ export const ChatUser = ({ content, id, type }: CHAT_MESSAGES_PROPS) => {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 4,
+        gap: 8,
       }}
     >
       <Badge color="#413DF8" name="Me" />

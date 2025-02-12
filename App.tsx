@@ -3,6 +3,7 @@ import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
+import { StatusBar } from "expo-status-bar";
 import { useSetAtom } from "jotai";
 import OpenAI from "openai";
 import { useEffect, useRef, useState } from "react";
@@ -132,6 +133,7 @@ export default function App() {
   useEffect(() => {
     handlePermission();
   }, []);
+  console.log(isMute, "isMute");
 
   return (
     <SafeAreaView
@@ -142,6 +144,7 @@ export default function App() {
         backgroundColor: "#030303",
       }}
     >
+      <StatusBar style="light" translucent={false} backgroundColor="#030303" />
       <Valid isValid={ViewChat}>
         <View
           style={{
@@ -234,13 +237,13 @@ export default function App() {
             style={[styles.touchable, isMute ? styles.touchable_muted : {}]}
             onPress={() => {
               if (!isPermissionMicrophone) return;
-              if (isMute) {
-                setisMute(false);
-                SpeechTextStart();
+              if (isMute === false) {
+                setisMute(true);
+                SpeechTextStop();
                 return;
               }
-              setisMute(true);
-              SpeechTextStop();
+              setisMute(false);
+              SpeechTextStart();
               return;
             }}
           >
