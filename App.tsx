@@ -35,16 +35,28 @@ export default function App() {
   const containerRef = useRef<ScrollView>(null);
   const [ViewChat, setViewChat] = useState(false);
 
-  useSpeechRecognitionEvent("result", (event) => {
+  useSpeechRecognitionEvent("result", async (event) => {
     setTranscript(event.results[0]?.transcript?.trim());
   });
 
+  const SpeechTextStop = () => {
+    ExpoSpeechRecognitionModule.stop();
+  };
+  const SpeechTextStart = () => {
+    ExpoSpeechRecognitionModule.start({
+      lang: "en-US",
+      interimResults: true,
+      maxAlternatives: 1,
+      continuous: true,
+      requiresOnDeviceRecognition: true,
+      addsPunctuation: false,
+      androidIntent: "android.speech.action.RECOGNIZE_SPEECH",
+      contextualStrings: ["Javscript", "html", "react", "node", "next.js"],
+    });
+  };
+
   const askChatGPT = async (message: string) => {
     try {
-      const isSpeak = await Speech.isSpeakingAsync();
-      if (isSpeak) {
-        Speech.stop();
-      }
       const chatCompletion = await client.chat.completions.create({
         messages: [
           {
@@ -58,7 +70,13 @@ export default function App() {
 
       const text = chatCompletion.choices[0]?.message?.content?.trim?.() ?? "";
 
-      Speech.speak(text);
+      SpeechTextStop();
+      Speech.speak(text, {
+        onDone: () => {
+          if (isMute) return;
+          SpeechTextStart();
+        },
+      });
 
       setNewChat({
         type: "assistant",
@@ -83,7 +101,7 @@ export default function App() {
       containerRef.current?.scrollToEnd();
       askChatGPT(transcript);
       setTranscript("");
-    }, 3000);
+    }, 800);
     return () => clearTimeout(handler); // Limpia el timeout si el usuario sigue escribiendo
   }, [transcript]);
 
@@ -106,32 +124,14 @@ export default function App() {
         ]
       );
       setIsPermissionMicrophone(false);
-      setisMute(true);
       return;
     }
     setIsPermissionMicrophone(true);
-    setisMute(false);
   };
 
   useEffect(() => {
     handlePermission();
   }, []);
-
-  useEffect(() => {
-    if (!isPermissionMicrophone) return;
-    if (isMute) {
-      ExpoSpeechRecognitionModule.stop();
-      return;
-    }
-    ExpoSpeechRecognitionModule.start({
-      lang: "en-US",
-      interimResults: true,
-      maxAlternatives: 1,
-      continuous: true,
-      requiresOnDeviceRecognition: false,
-      addsPunctuation: false,
-    });
-  }, [isPermissionMicrophone, isMute]);
 
   return (
     <SafeAreaView
@@ -194,6 +194,7 @@ export default function App() {
             }}
             onPress={() => {
               setViewChat((prev) => !prev);
+              containerRef.current?.scrollToEnd();
             }}
           >
             <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -226,7 +227,14 @@ export default function App() {
             style={[styles.touchable, isMute ? styles.touchable_muted : {}]}
             onPress={() => {
               if (!isPermissionMicrophone) return;
-              setisMute((prev) => !prev);
+              if (isMute) {
+                setisMute(false);
+                SpeechTextStart();
+                return;
+              }
+              setisMute(true);
+              SpeechTextStop();
+              return;
             }}
           >
             <Valid isValid={!isMute}>
@@ -271,14 +279,6 @@ export default function App() {
               </Svg>
             </Valid>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.touchable}>
-            <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <Path
-                d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
-                fill="black"
-              />
-            </Svg>
-          </TouchableOpacity> */}
         </View>
       </View>
     </SafeAreaView>
