@@ -27,7 +27,6 @@ const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 const client = new OpenAI({
   apiKey: API_KEY, // This is the default and can be omitted
 });
-
 export default function App() {
   const setNewChat = useSetAtom(SET_NEW_CHAT_ATOM);
   const [transcript, setTranscript] = useState("");
