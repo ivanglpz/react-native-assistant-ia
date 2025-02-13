@@ -11,7 +11,7 @@ export const ChatUser = ({ content, id, type }: CHAT_MESSAGES_PROPS) => {
         gap: 8,
       }}
     >
-      <Badge color="#413DF8" name="Me" />
+      <Badge colors={["#00c6ff", "#0072ff"]} name="Me" />
       <Text
         style={{
           fontSize: 18,

@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 
-export const Badge = ({ name, color }: { name: string; color: string }) => {
+export const Badge = ({ name, colors }: { name: string; colors: string[] }) => {
   return (
     <View
       style={{
@@ -12,7 +12,7 @@ export const Badge = ({ name, color }: { name: string; color: string }) => {
       }}
     >
       <LinearGradient
-        colors={[color, color]}
+        colors={[colors[0], colors[1]]}
         style={{
           height: 25,
           width: 25,

@@ -18,7 +18,7 @@ import {
   View,
 } from "react-native";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
-import { Assistant } from "./components/Assistant";
+import { Assistant, StateAsistant } from "./components/Assistant";
 import { Chat } from "./components/Chat";
 import { Valid } from "./components/Valid";
 import { SET_NEW_CHAT_ATOM } from "./state/chat";
@@ -34,6 +34,7 @@ export default function App() {
   const [isPermissionMicrophone, setIsPermissionMicrophone] = useState(false);
   const containerRef = useRef<ScrollView>(null);
   const [ViewChat, setViewChat] = useState(false);
+  const [state, setState] = useState<StateAsistant>("INITIAL");
 
   useSpeechRecognitionEvent("result", async (event) => {
     setTranscript(event.results[0]?.transcript?.trim());
@@ -71,9 +72,14 @@ export default function App() {
 
       const text = chatCompletion.choices[0]?.message?.content?.trim?.() ?? "";
 
+      setState("ANSWER");
+
       Speech.speak(text, {
         onStart: SpeechTextStop,
-        onDone: SpeechTextStart,
+        onDone: () => {
+          SpeechTextStart();
+          setState("INITIAL");
+        },
       });
 
       setNewChat({
@@ -98,11 +104,12 @@ export default function App() {
   useEffect(() => {
     if (transcript?.length === 0) return;
     const handler = setTimeout(() => {
+      setState("WAIT");
       setNewChat({ type: "user", content: transcript });
       containerRef.current?.scrollToEnd();
       askChatGPT(transcript);
       setTranscript("");
-    }, 800);
+    }, 600);
     return () => clearTimeout(handler); // Limpia el timeout si el usuario sigue escribiendo
   }, [transcript]);
 
@@ -167,7 +174,7 @@ export default function App() {
       </Valid>
       <ScrollView ref={containerRef} contentContainerStyle={{ flexGrow: 1 }}>
         <Valid isValid={!ViewChat}>
-          <Assistant name="Whil" />
+          <Assistant name="Whil" state={state} />
         </Valid>
         <Valid isValid={ViewChat}>
           <Chat />

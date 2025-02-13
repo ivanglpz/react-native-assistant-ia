@@ -11,7 +11,7 @@ export const ChatAssistant = ({ content, id, type }: CHAT_MESSAGES_PROPS) => {
         gap: 8,
       }}
     >
-      <Badge color="#3DC5F8" name="Whil" />
+      <Badge colors={["#43cea2", "#185a9d"]} name="Whil" />
       <Text
         style={{
           fontSize: 18,
