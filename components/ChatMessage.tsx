@@ -22,7 +22,7 @@ export const ChatMessage = ({ content, id, type }: CHAT_MESSAGES_PROPS) => {
         colors={
           type === "assistant" ? ["#43cea2", "#185a9d"] : ["#00c6ff", "#0072ff"]
         }
-        name={type === "assistant" ? "Whil" : "Me"}
+        name={type === "assistant" ? "Whil (Assistant)" : "Me"}
       />
       <Text
         style={{

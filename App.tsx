@@ -174,7 +174,7 @@ export default function App() {
       </Valid>
       <ScrollView ref={containerRef} contentContainerStyle={{ flexGrow: 1 }}>
         <Valid isValid={!ViewChat}>
-          <Assistant name="Whil" state={state} />
+          <Assistant name="Whil (Assistant)" state={state} />
         </Valid>
         <Valid isValid={ViewChat}>
           <Chat />
