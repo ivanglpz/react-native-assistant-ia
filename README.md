@@ -2,6 +2,8 @@
 
 This project is a mobile application built with **Expo React Native**, allowing users to interact with the OpenAI API using **Speech-to-Text**. Through voice commands, users can ask questions or give instructions, and the app transcribes their speech, sends it to the OpenAI API, and displays the response in a chat format.
 
+![app_test_rn_ia](https://res.cloudinary.com/whil/image/upload/v1739428320/projects/react-native-assistant-ia/images/Screen_Recording_20250212_223352_rn_app_store-ezgif.com-video-to-gif-converter_vtocl4.gif)
+
 ## Features
 
 - **Voice Interaction**: Use your device's microphone to talk to the app.
