@@ -22,6 +22,7 @@ export const Badge = ({ name, colors }: { name: string; colors: string[] }) => {
       <Text
         style={{
           fontSize: 16,
+          fontWeight: "bold",
           color: "white",
         }}
       >

@@ -1,8 +1,7 @@
 import { useAtomValue } from "jotai";
 import { View } from "react-native";
 import { CHAT_MESSAGES_ATOM } from "../state/chat";
-import { ChatAssistant } from "./ChatAssistant";
-import { ChatUser } from "./ChatUser";
+import { ChatMessage } from "./ChatMessage";
 
 export const Chat = () => {
   const messages = useAtomValue(CHAT_MESSAGES_ATOM);
@@ -18,10 +17,7 @@ export const Chat = () => {
       }}
     >
       {messages?.map((e) => {
-        if (e?.type === "user") {
-          return <ChatUser key={e?.id} {...e} />;
-        }
-        return <ChatAssistant key={e?.id} {...e} />;
+        return <ChatMessage key={e?.id} {...e} />;
       })}
     </View>
   );
