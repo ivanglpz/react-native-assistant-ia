@@ -147,10 +147,10 @@ export default function App() {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#030303",
+        backgroundColor: "#0D0D0D",
       }}
     >
-      <StatusBar style="light" translucent={false} backgroundColor="#030303" />
+      <StatusBar style="light" translucent={false} backgroundColor="#0D0D0D" />
       <Valid isValid={ViewChat}>
         <View
           style={{
