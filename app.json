@@ -18,8 +18,7 @@
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
-      },
-      "appleTeamId": "43YF2P453Q"
+      }
     },
     "android": {
       "adaptiveIcon": {
